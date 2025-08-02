@@ -1,0 +1,3 @@
+1. Delete logs after the file becomes too big
+2. Other notifications - Telegram Bot, Whatsapp, Text Message,
+3. Multiple products checking!
