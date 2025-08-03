@@ -20,6 +20,7 @@ class AmulStockChecker:
     def __init__(self, headless=True, log_file=None):
         """Initialize the web scraper with Chrome options"""
         self.setup_logging(log_file)
+        self.clean_cron_log_file()
         self.setup_driver(headless)
         self.wait = WebDriverWait(self.driver, 15)
         self.pincode = PINCODE
@@ -209,6 +210,7 @@ class AmulStockChecker:
         except Exception as e:
             self.logger.error(f"✗ Error checking stock status: {e}")
             return "ERROR"
+    
     def save_status(self, status):
         """Save the current stock status to a JSON file"""
         try:
@@ -308,3 +310,17 @@ class AmulStockChecker:
             self.logger.info("🧹 Browser closed successfully \n\n")
         except Exception as e:
             self.logger.error(f"⚠️ Error during cleanup: {e}")
+
+    def clean_cron_log_file(self):
+        """Clean the cron log file if it exceeds size of 500Kbs """
+        # Log file path --> log/amul-log.log
+        log_file_path = os.path.join(os.path.dirname(__file__), 'log', 'amul-log.log')
+        if os.path.exists(log_file_path) and os.path.getsize(log_file_path) > 500 * 1024:
+            try:
+                with open(log_file_path, 'w') as log_file:
+                    log_file.write("")  # Clear the file content
+                self.logger.info("🗑️ Cron log file cleaned successfully")
+            except Exception as e:
+                self.logger.error(f"⚠️ Error cleaning cron log file: {e}")
+        else:
+            self.logger.info("🗑️ Cron log file size is within limits, no cleaning needed")
